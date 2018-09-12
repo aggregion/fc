@@ -11,8 +11,8 @@ using namespace fc;
 
 BOOST_AUTO_TEST_SUITE(cypher_suites)
 BOOST_AUTO_TEST_CASE(test_k1) try {
-   auto private_key_string = std::string("5J8k2nXo7uapvxzYs5EDy8PqWgpMgYKEtbGj54cC9bAdGzCYDZq");
-   auto expected_public_key = std::string("AGR5yoLebJ8WcyqM4advqzt1M3FJLX1xgoMLwPtBnhyiF1uiJewmG");
+   auto private_key_string = std::string("5Hqh8bdtEjh9MFeEKzRTLX9pn68qoc17QfTz6JB8Pn59VojjVsS");
+   auto expected_public_key = std::string("AGR8b2ojDi7mMWQxE3W6Fa1dr9bPfe5NTpRmyqBHECLNeFrdZHZrq");
    auto test_private_key = private_key(private_key_string);
    auto test_public_key = test_private_key.get_public_key();
 
