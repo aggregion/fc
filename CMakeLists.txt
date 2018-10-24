@@ -16,13 +16,12 @@ endif()
 
 SET (ORIGINAL_LIB_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
 
-find_package(Secp256k1 REQUIRED)
-find_package(GMP REQUIRED)
+add_subdirectory( secp256k1 )
 
 IF( ECC_IMPL STREQUAL openssl )
   SET( ECC_REST src/crypto/elliptic_impl_pub.cpp )
 ELSE( ECC_IMPL STREQUAL openssl )
-  SET( ECC_LIB ${Secp256k1_LIBRARY} ${GMP_LIBRARIES} )
+  SET( ECC_LIB secp256k1 )
   IF( ECC_IMPL STREQUAL mixed )
     SET( ECC_REST src/crypto/elliptic_impl_priv.cpp src/crypto/elliptic_impl_pub.cpp )
   ELSE( ECC_IMPL STREQUAL mixed )
@@ -101,6 +100,7 @@ set( fc_sources
      src/crypto/private_key.cpp
      src/crypto/signature.cpp
      src/network/ip.cpp
+     src/network/platform_root_ca.cpp
      src/network/resolve.cpp
      src/network/udp_socket.cpp
      src/network/url.cpp
@@ -147,14 +147,18 @@ target_include_directories(fc
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${Boost_INCLUDE_DIR}
     ${OPENSSL_INCLUDE_DIR}
-    ${Secp256k1_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/websocketpp
   )
 
 IF(NOT WIN32)
   set(LINK_USR_LOCAL_LIB -L/usr/local/lib)
 ENDIF()
-target_link_libraries( fc PUBLIC ${LINK_USR_LOCAL_LIB} ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${PLATFORM_SPECIFIC_LIBS} ${RPCRT4} ${CMAKE_DL_LIBS} ${rt_library} ${readline_libraries} ${ECC_LIB} )
+
+IF(APPLE)
+  find_library(security_framework Security)
+  find_library(corefoundation_framework CoreFoundation)
+ENDIF()
+target_link_libraries( fc PUBLIC ${LINK_USR_LOCAL_LIB} ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${PLATFORM_SPECIFIC_LIBS} ${RPCRT4} ${CMAKE_DL_LIBS} ${rt_library} ${readline_libraries} ${ECC_LIB} ${security_framework} ${corefoundation_framework} )
 
 
 SET(OPENSSL_CONF_TARGET )
